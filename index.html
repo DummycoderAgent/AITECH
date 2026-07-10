@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillVoice | AI Technical Interview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12181F; --stage:#0D1B22; --stage2:#12242E; --paper:#F6F4EF; --card:#FFFFFF;
+  --teal:#0E6E68; --teal-d:#0A524E; --amber:#E4A33C; --line:#DCD7CC; --mut:#5B6570;
+  --red:#C24C3F; --ok:#2E7D57;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+h1,h2,h3,.display{font-family:'Sora',sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 20px}
+.hidden{display:none !important}
+button{font-family:'Inter',sans-serif;cursor:pointer;border:none}
+.btn{background:var(--teal);color:#fff;padding:14px 28px;border-radius:10px;font-size:16px;font-weight:600;transition:background .15s}
+.btn:hover{background:var(--teal-d)}
+.btn:disabled{background:#9BB0AE;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--teal);border:1.5px solid var(--teal)}
+.btn.ghost:hover{background:#0E6E6812}
+.btn.rec{background:var(--red)}
+.btn.rec:hover{background:#A83E33}
+
+/* ── Landing ── */
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:40px}
+.brand .dot{width:14px;height:14px;border-radius:50%;background:var(--amber)}
+.brand span{font-family:'Sora',sans-serif;font-weight:700;font-size:19px;letter-spacing:.3px}
+.hero h1{font-size:clamp(30px,4.5vw,44px);font-weight:700;line-height:1.15;max-width:640px}
+.hero h1 em{font-style:normal;color:var(--teal)}
+.hero p{color:var(--mut);font-size:17px;margin:16px 0 34px;max-width:560px;line-height:1.6}
+.namebox{margin-bottom:28px;max-width:420px}
+.namebox label{display:block;font-size:13px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);margin-bottom:8px}
+.namebox input{width:100%;padding:13px 16px;border:1.5px solid var(--line);border-radius:10px;font-size:16px;background:var(--card);font-family:'Inter',sans-serif}
+.namebox input:focus{outline:2px solid var(--teal);border-color:var(--teal)}
+.skills-label{font-size:13px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);margin-bottom:12px}
+.skills{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:34px}
+.skill{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:18px;text-align:left;transition:all .15s;position:relative}
+.skill:hover{border-color:var(--teal);transform:translateY(-2px)}
+.skill.sel{border-color:var(--teal);outline:2px solid var(--teal);background:#0E6E680A}
+.skill .sk-name{font-family:'Sora',sans-serif;font-weight:600;font-size:16px;margin-bottom:5px}
+.skill .sk-desc{font-size:13px;color:var(--mut);line-height:1.45}
+.skill .tick{position:absolute;top:14px;right:14px;width:20px;height:20px;border-radius:50%;background:var(--teal);color:#fff;font-size:12px;display:none;align-items:center;justify-content:center}
+.skill.sel .tick{display:flex}
+.notice{font-size:13px;color:var(--mut);margin-top:14px;line-height:1.5;max-width:560px}
+
+/* ── Interview stage ── */
+.stagebg{background:linear-gradient(160deg,var(--stage) 0%,var(--stage2) 100%);min-height:100vh}
+.stagebg .wrap{max-width:920px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}
+.topbar .brand span{color:#EDEAE2}
+.qprog{display:flex;gap:8px;align-items:center}
+.qdot{width:34px;height:6px;border-radius:3px;background:#FFFFFF22}
+.qdot.on{background:var(--amber)}
+.qlabel{color:#C9C2B2;font-size:13px;margin-left:10px;letter-spacing:.4px}
+.stagecard{background:#FFFFFF08;border:1px solid #FFFFFF1A;border-radius:22px;padding:26px;backdrop-filter:blur(4px)}
+.videoframe{position:relative;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9;max-height:430px;margin:0 auto;display:flex;align-items:center;justify-content:center}
+.videoframe video{width:100%;height:100%;object-fit:cover}
+.presenter-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 30%,#1D3A47,#0D1B22)}
+.statuspill{position:absolute;top:14px;left:14px;background:#000000AA;color:#fff;font-size:13px;font-weight:500;padding:7px 14px;border-radius:999px;display:flex;align-items:center;gap:8px}
+.statuspill .pulse{width:9px;height:9px;border-radius:50%;background:var(--amber)}
+.statuspill.listening .pulse{background:var(--red);animation:pulse 1.1s infinite}
+.statuspill.speaking .pulse{background:var(--ok);animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.caption{margin-top:18px;color:#EDEAE2;font-size:16.5px;line-height:1.65;background:#FFFFFF0D;border-left:3px solid var(--amber);padding:14px 18px;border-radius:0 10px 10px 0}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;margin-top:22px}
+.timer{font-family:'Sora',sans-serif;font-size:20px;font-weight:600;color:#EDEAE2;min-width:70px;text-align:center}
+.hint{color:#A8A292;font-size:13px;text-align:center;margin-top:14px;line-height:1.5}
+.loadstate{display:flex;flex-direction:column;align-items:center;gap:16px;padding:60px 20px;color:#C9C2B2}
+.spinner{width:42px;height:42px;border:3px solid #FFFFFF22;border-top-color:var(--amber);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.errbox{background:#C24C3F1A;border:1px solid #C24C3F55;color:#F5C9C2;padding:14px 18px;border-radius:10px;margin-top:16px;font-size:14px;line-height:1.5}
+
+/* ── Report ── */
+.rephead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:28px}
+.rephead h1{font-size:30px}
+.repmeta{color:var(--mut);font-size:14px;line-height:1.6;text-align:right}
+.scorerow{display:grid;grid-template-columns:220px 1fr;gap:28px;align-items:center;margin-bottom:32px}
+@media(max-width:640px){.scorerow{grid-template-columns:1fr}}
+.dialwrap{position:relative;width:200px;height:200px;margin:0 auto}
+.dialwrap svg{transform:rotate(-90deg)}
+.dialnum{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dialnum .n{font-family:'Sora',sans-serif;font-size:44px;font-weight:700}
+.dialnum .b{font-size:13px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--teal)}
+.summary{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:22px;font-size:15.5px;line-height:1.7}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:32px}
+@media(max-width:640px){.twocol{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:20px}
+.panel h3{font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.panel ul{list-style:none}
+.panel li{font-size:14.5px;line-height:1.55;padding:7px 0 7px 22px;position:relative;color:#333B44}
+.panel li::before{content:"";position:absolute;left:2px;top:14px;width:8px;height:8px;border-radius:50%}
+.panel.good li::before{background:var(--ok)}
+.panel.dev li::before{background:var(--amber)}
+.qcard{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:20px;margin-bottom:14px}
+.qcard .qq{font-weight:600;font-size:15px;margin-bottom:10px;line-height:1.5}
+.qcard .qt{font-size:14px;color:var(--mut);line-height:1.6;margin-bottom:14px;border-left:3px solid var(--line);padding-left:12px}
+.bars{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.bar .bl{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mut);margin-bottom:4px}
+.bar .bt{height:7px;background:#E9E5DC;border-radius:4px;overflow:hidden}
+.bar .bf{height:100%;background:var(--teal);border-radius:4px}
+.qnote{font-size:13.5px;color:#4A5560;margin-top:12px;font-style:italic}
+.reco{background:var(--stage);color:#EDEAE2;border-radius:14px;padding:22px;font-size:15.5px;line-height:1.65;margin:28px 0}
+.reco strong{color:var(--amber)}
+.repactions{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+@media print{
+  .repactions,.brand{display:none}
+  body{background:#fff}
+  .wrap{padding:0;max-width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ── SCREEN 1: LANDING ─────────────────────────────── -->
+<div id="scrLanding" class="wrap">
+  <div class="brand"><div class="dot"></div><span>SkillVoice</span></div>
+  <div class="hero">
+    <h1>A spoken technical interview, conducted by an <em>AI interviewer</em>.</h1>
+    <p>Choose the skill you want to be evaluated on. Maya, your interviewer, will ask you three questions adapted to your answers. Speak naturally. At the end you receive a scored report.</p>
+  </div>
+  <div class="namebox">
+    <label for="candName">Your name</label>
+    <input id="candName" type="text" placeholder="e.g. Priya Sharma" maxlength="60">
+  </div>
+  <div class="skills-label">Select one skill</div>
+  <div class="skills" id="skillGrid"></div>
+  <button class="btn" id="startBtn" disabled>Begin interview</button>
+  <p class="notice">You will need a working microphone. Each answer can be up to three minutes long. Your responses are transcribed and evaluated automatically.</p>
+</div>
+
+<!-- ── SCREEN 2: INTERVIEW ────────────────────────────── -->
+<div id="scrStage" class="stagebg hidden">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand"><div class="dot"></div><span>SkillVoice</span></div>
+      <div class="qprog" id="qprog"></div>
+    </div>
+    <div class="stagecard">
+      <div id="stageLoad" class="loadstate">
+        <div class="spinner"></div>
+        <div id="stageLoadText">Your interviewer is preparing the question…</div>
+      </div>
+      <div id="stageLive" class="hidden">
+        <div class="videoframe">
+          <video id="avatarVideo" playsinline class="hidden"></video>
+          <div id="presenterFallback" class="presenter-fallback hidden">
+            <svg width="190" height="190" viewBox="0 0 200 200">
+              <circle cx="100" cy="100" r="96" fill="#16303B"/>
+              <circle cx="100" cy="78" r="34" fill="#E8C39A"/>
+              <path d="M100 40 q-40 0 -38 44 q4 -30 38 -28 q34 -2 38 28 q2 -44 -38 -44" fill="#2B2320"/>
+              <path d="M46 168 q8 -46 54 -46 q46 0 54 46 z" fill="#0E6E68"/>
+              <circle id="fbRing" cx="100" cy="100" r="96" fill="none" stroke="#E4A33C" stroke-width="3" opacity="0"/>
+            </svg>
+          </div>
+          <div class="statuspill" id="statusPill"><div class="pulse"></div><span id="statusText">Speaking</span></div>
+        </div>
+        <div class="caption" id="captionText"></div>
+        <div class="controls" id="controls">
+          <button class="btn" id="replayBtn">Replay question</button>
+          <button class="btn rec" id="recBtn">Start answering</button>
+          <div class="timer hidden" id="timer">0:00</div>
+          <button class="btn hidden" id="stopBtn">Stop recording</button>
+          <button class="btn hidden" id="submitBtn">Submit answer</button>
+          <button class="btn ghost hidden" id="againBtn">Record again</button>
+        </div>
+        <div class="hint" id="hintText">Listen to the question, then press Start answering. Speak clearly for up to three minutes.</div>
+        <div class="errbox hidden" id="errBox"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCREEN 3: REPORT ───────────────────────────────── -->
+<div id="scrReport" class="wrap hidden">
+  <div class="brand"><div class="dot"></div><span>SkillVoice</span></div>
+  <div id="reportBody"></div>
+</div>
+
+<script>
+const SKILLS = [
+  {id:"Python", name:"Python", desc:"Core language, data structures, idioms and applied problem solving"},
+  {id:"SQL and Data Modelling", name:"SQL and Data", desc:"Queries, joins, optimisation and schema design thinking"},
+  {id:"JavaScript and Modern Web", name:"JavaScript", desc:"Language fundamentals, async patterns and the modern web stack"},
+  {id:"Prompt Engineering", name:"Prompt Engineering", desc:"Designing, structuring and evaluating prompts for LLMs"},
+  {id:"Generative AI and LLM Engineering", name:"GenAI and LLM Engineering", desc:"RAG, agents, fine tuning, evaluation and production LLM systems"},
+  {id:"Machine Learning Fundamentals", name:"Machine Learning", desc:"Core ML concepts, model selection, metrics and pitfalls"}
+];
+
+const $ = id => document.getElementById(id);
+let state = {name:"", skill:null, sessionId:null, qNum:1, qTotal:3, questionText:"", videoUrl:null, fallback:false};
+let mediaRecorder=null, chunks=[], audioBlob=null, timerInt=null, seconds=0, mimeType="audio/webm";
+
+// ── Landing ──
+const grid = $("skillGrid");
+SKILLS.forEach(s=>{
+  const b=document.createElement("button");
+  b.className="skill";
+  b.innerHTML=`<div class="tick">✓</div><div class="sk-name">${s.name}</div><div class="sk-desc">${s.desc}</div>`;
+  b.onclick=()=>{state.skill=s.id;[...grid.children].forEach(c=>c.classList.remove("sel"));b.classList.add("sel");refreshStart();};
+  grid.appendChild(b);
+});
+$("candName").addEventListener("input",e=>{state.name=e.target.value.trim();refreshStart();});
+function refreshStart(){$("startBtn").disabled=!(state.skill&&state.name.length>=2);}
+
+$("startBtn").onclick=async ()=>{
+  show("scrStage"); stageLoading("Your interviewer is preparing the first question…");
+  try{
+    const r=await fetch("/api/start",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:state.name,skill:state.skill})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error||"Could not start");
+    Object.assign(state,{sessionId:d.sessionId,qNum:d.questionNumber,qTotal:d.totalQuestions,questionText:d.questionText,videoUrl:d.videoUrl,fallback:d.fallback});
+    presentQuestion();
+  }catch(e){ stageError(e.message); }
+};
+
+// ── Stage helpers ──
+function show(id){["scrLanding","scrStage","scrReport"].forEach(s=>$(s).classList.add("hidden"));$(id).classList.remove("hidden");window.scrollTo(0,0);}
+function stageLoading(txt){$("stageLoad").classList.remove("hidden");$("stageLive").classList.add("hidden");$("stageLoadText").textContent=txt;}
+function stageError(msg){$("stageLoad").classList.add("hidden");$("stageLive").classList.remove("hidden");$("errBox").classList.remove("hidden");$("errBox").textContent=msg;}
+function setStatus(mode,txt){const p=$("statusPill");p.className="statuspill "+mode;$("statusText").textContent=txt;}
+function renderProg(){
+  const el=$("qprog"); el.innerHTML="";
+  for(let i=1;i<=state.qTotal;i++){const d=document.createElement("div");d.className="qdot"+(i<=state.qNum?" on":"");el.appendChild(d);}
+  const l=document.createElement("div");l.className="qlabel";l.textContent=`Question ${state.qNum} of ${state.qTotal}`;el.appendChild(l);
+}
+
+function presentQuestion(){
+  $("stageLoad").classList.add("hidden");$("stageLive").classList.remove("hidden");
+  $("errBox").classList.add("hidden");
+  renderProg();
+  $("captionText").textContent=state.questionText;
+  resetControls();
+  if(state.videoUrl){
+    $("presenterFallback").classList.add("hidden");
+    const v=$("avatarVideo"); v.classList.remove("hidden"); v.src=state.videoUrl;
+    setStatus("speaking","Speaking");
+    v.onended=()=>setStatus("","Your turn");
+    v.play().catch(()=>{ setStatus("","Press Replay to hear the question"); });
+  }else{
+    $("avatarVideo").classList.add("hidden");
+    $("presenterFallback").classList.remove("hidden");
+    speakFallback(state.questionText);
+  }
+}
+
+function speakFallback(text){
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.rate=0.96; u.lang="en-IN";
+    const voices=speechSynthesis.getVoices();
+    const v=voices.find(v=>v.lang==="en-IN")||voices.find(v=>v.lang.startsWith("en"));
+    if(v) u.voice=v;
+    setStatus("speaking","Speaking");
+    $("fbRing").style.opacity=1;
+    u.onend=()=>{setStatus("","Your turn");$("fbRing").style.opacity=0;};
+    speechSynthesis.speak(u);
+  }catch(e){ setStatus("","Your turn"); }
+}
+
+$("replayBtn").onclick=()=>{
+  if(state.videoUrl){const v=$("avatarVideo");v.currentTime=0;v.play();setStatus("speaking","Speaking");}
+  else speakFallback(state.questionText);
+};
+
+function resetControls(){
+  $("recBtn").classList.remove("hidden"); $("recBtn").textContent="Start answering";
+  ["timer","stopBtn","submitBtn","againBtn"].forEach(i=>$(i).classList.add("hidden"));
+  $("hintText").textContent="Listen to the question, then press Start answering. Speak clearly for up to three minutes.";
+  audioBlob=null; seconds=0;
+}
+
+// ── Recording ──
+$("recBtn").onclick=async ()=>{
+  try{
+    speechSynthesis.cancel(); const v=$("avatarVideo"); if(!v.paused) v.pause();
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mimeType = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" :
+               (MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4" : "");
+    mediaRecorder=new MediaRecorder(stream, mimeType?{mimeType}:{});
+    chunks=[];
+    mediaRecorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+    mediaRecorder.onstop=()=>{
+      audioBlob=new Blob(chunks,{type:mimeType||"audio/webm"});
+      stream.getTracks().forEach(t=>t.stop());
+      $("stopBtn").classList.add("hidden"); $("timer").classList.add("hidden");
+      $("submitBtn").classList.remove("hidden"); $("againBtn").classList.remove("hidden");
+      $("hintText").textContent="Happy with your answer? Submit it, or record again.";
+      setStatus("","Answer recorded");
+    };
+    mediaRecorder.start();
+    seconds=0; $("timer").textContent="0:00";
+    $("recBtn").classList.add("hidden"); $("submitBtn").classList.add("hidden"); $("againBtn").classList.add("hidden");
+    $("stopBtn").classList.remove("hidden"); $("timer").classList.remove("hidden");
+    $("hintText").textContent="Recording. Press Stop recording when you are done.";
+    setStatus("listening","Listening");
+    timerInt=setInterval(()=>{
+      seconds++;
+      $("timer").textContent=Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0");
+      if(seconds>=180){clearInterval(timerInt);mediaRecorder.stop();}
+    },1000);
+  }catch(e){
+    stageError("Microphone access was blocked. Please allow microphone access in your browser and try again.");
+  }
+};
+$("stopBtn").onclick=()=>{clearInterval(timerInt);if(mediaRecorder&&mediaRecorder.state!=="inactive")mediaRecorder.stop();};
+$("againBtn").onclick=()=>{resetControls();setStatus("","Your turn");};
+
+$("submitBtn").onclick=async ()=>{
+  if(!audioBlob) return;
+  stageLoading("Reviewing your answer…");
+  try{
+    const fd=new FormData();
+    const ext = mimeType.includes("mp4")?"m4a":"webm";
+    fd.append("audio",audioBlob,"answer."+ext);
+    const r=await fetch("/api/answer/"+state.sessionId,{method:"POST",body:fd});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error||"Could not process the answer");
+    if(d.retry){
+      $("stageLoad").classList.add("hidden");$("stageLive").classList.remove("hidden");
+      resetControls(); stageErrorSoft(d.message); return;
+    }
+    if(d.done){
+      stageLoading("Preparing your assessment report…");
+      await loadReport(); return;
+    }
+    stageLoading("Your interviewer is preparing the next question…");
+    Object.assign(state,{qNum:d.next.questionNumber,qTotal:d.next.totalQuestions,questionText:d.next.questionText,videoUrl:d.next.videoUrl,fallback:d.next.fallback});
+    presentQuestion();
+  }catch(e){
+    $("stageLoad").classList.add("hidden");$("stageLive").classList.remove("hidden");
+    resetControls(); stageErrorSoft(e.message+" Your recording is kept on this screen, please try submitting again.");
+    $("submitBtn").classList.remove("hidden");$("againBtn").classList.remove("hidden");$("recBtn").classList.add("hidden");
+  }
+};
+function stageErrorSoft(msg){$("errBox").classList.remove("hidden");$("errBox").textContent=msg;}
+
+// ── Report ──
+async function loadReport(){
+  const r=await fetch("/api/report/"+state.sessionId);
+  const d=await r.json();
+  if(!r.ok){stageError(d.error||"Could not generate the report");return;}
+  renderReport(d); show("scrReport");
+}
+function dial(score){
+  const R=86, C=2*Math.PI*R, off=C*(1-score/100);
+  const col=score>=75?"#0E6E68":(score>=50?"#E4A33C":"#C24C3F");
+  return `<div class="dialwrap"><svg width="200" height="200">
+    <circle cx="100" cy="100" r="${R}" stroke="#E9E5DC" stroke-width="14" fill="none"/>
+    <circle cx="100" cy="100" r="${R}" stroke="${col}" stroke-width="14" fill="none" stroke-linecap="round"
+      stroke-dasharray="${C}" stroke-dashoffset="${off}"/></svg>
+    <div class="dialnum"><div class="n">${score}</div><div class="b">out of 100</div></div></div>`;
+}
+function esc(s){const d=document.createElement("div");d.textContent=s||"";return d.innerHTML;}
+function renderReport(d){
+  const rep=d.report;
+  const qcards=d.questions.map(q=>`
+    <div class="qcard">
+      <div class="qq">Q${q.number}. ${esc(q.question)}</div>
+      <div class="qt">"${esc(q.transcript)}"</div>
+      <div class="bars">
+        ${["accuracy","depth","clarity"].map(k=>`
+          <div class="bar"><div class="bl"><span>${k[0].toUpperCase()+k.slice(1)}</span><span>${q[k]}/10</span></div>
+          <div class="bt"><div class="bf" style="width:${q[k]*10}%"></div></div></div>`).join("")}
+      </div>
+      <div class="qnote">${esc(q.note)}</div>
+    </div>`).join("");
+  $("reportBody").innerHTML=`
+    <div class="rephead">
+      <div><h1>Technical Skill Assessment Report</h1></div>
+      <div class="repmeta"><strong>${esc(d.candidate)}</strong><br>${esc(d.skill)}<br>${esc(d.date)}</div>
+    </div>
+    <div class="scorerow">
+      ${dial(rep.overall_score)}
+      <div>
+        <div style="font-family:'Sora';font-weight:700;font-size:22px;margin-bottom:10px">${esc(rep.band)}</div>
+        <div class="summary">${esc(rep.summary)}</div>
+      </div>
+    </div>
+    <div class="twocol">
+      <div class="panel good"><h3>Demonstrated strengths</h3><ul>${(rep.strengths||[]).map(s=>`<li>${esc(s)}</li>`).join("")}</ul></div>
+      <div class="panel dev"><h3>Development areas</h3><ul>${(rep.improvements||[]).map(s=>`<li>${esc(s)}</li>`).join("")}</ul></div>
+    </div>
+    <h2 style="font-size:20px;margin-bottom:14px">Question by question detail</h2>
+    ${qcards}
+    <div class="reco"><strong>Recommendation.</strong> ${esc(rep.recommendation)}</div>
+    <div class="repactions">
+      <button class="btn" onclick="window.print()">Download report as PDF</button>
+      <button class="btn ghost" onclick="location.reload()">Start a new assessment</button>
+    </div>`;
+}
+// preload voices for the fallback narrator
+speechSynthesis.getVoices();
+</script>
+</body>
+</html>
