@@ -25,6 +25,7 @@ const TOTAL_QUESTIONS = parseInt(process.env.TOTAL_QUESTIONS || "3", 10);
 
 // In memory session store (fine for a POC / demo deployment)
 const sessions = new Map();
+let lastDidError = null;
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 function didAuthHeader() {
@@ -113,14 +114,15 @@ async function createAvatarVideo(text) {
     });
     if (!createResp.ok) {
       const t = await createResp.text();
-      console.error("D-ID create failed:", createResp.status, t.slice(0, 300));
+      lastDidError = `create ${createResp.status}: ${t.slice(0, 300)}`;
+      console.error("D-ID create failed:", lastDidError);
       return { videoUrl: null, fallback: true, reason: `create_${createResp.status}` };
     }
     const created = await createResp.json();
     const talkId = created.id;
 
-    // Poll until the video is ready (up to 100 seconds)
-    for (let i = 0; i < 50; i++) {
+    // Poll until the video is ready (up to 60 seconds)
+    for (let i = 0; i < 30; i++) {
       await new Promise((r) => setTimeout(r, 2000));
       const pollResp = await fetch(`https://api.d-id.com/talks/${talkId}`, {
         headers: { Authorization: auth },
@@ -128,15 +130,20 @@ async function createAvatarVideo(text) {
       if (!pollResp.ok) continue;
       const status = await pollResp.json();
       if (status.status === "done" && status.result_url) {
+        lastDidError = null;
         return { videoUrl: status.result_url, fallback: false };
       }
       if (status.status === "error" || status.status === "rejected") {
-        console.error("D-ID render error:", JSON.stringify(status).slice(0, 300));
+        lastDidError = `render: ${JSON.stringify(status).slice(0, 300)}`;
+        console.error("D-ID render error:", lastDidError);
         return { videoUrl: null, fallback: true, reason: "render_error" };
       }
     }
+    lastDidError = "timeout: video was accepted but did not finish rendering in 60 seconds";
+    console.error("D-ID timeout for talk", talkId);
     return { videoUrl: null, fallback: true, reason: "timeout" };
   } catch (e) {
+    lastDidError = `exception: ${e.message}`;
     console.error("D-ID exception:", e.message);
     return { videoUrl: null, fallback: true, reason: "exception" };
   }
@@ -219,8 +226,45 @@ app.get("/api/health", (req, res) => {
     anthropic: !!ANTHROPIC_API_KEY,
     openai: !!OPENAI_API_KEY,
     did: !!DID_API_KEY,
+    didLastError: lastDidError,
     model: CLAUDE_MODEL,
   });
+});
+
+// Open this in the browser to diagnose D-ID issues in one shot
+app.get("/api/did-test", async (req, res) => {
+  const auth = didAuthHeader();
+  if (!auth) return res.json({ step: "key", ok: false, detail: "DID_API_KEY is not set" });
+  const result = { keyPresent: true };
+  try {
+    // Step 1: does the key authenticate, and how many credits remain
+    const credResp = await fetch("https://api.d-id.com/credits", { headers: { Authorization: auth } });
+    const credBody = await credResp.text();
+    result.creditsCheck = { status: credResp.status, body: credBody.slice(0, 400) };
+    if (!credResp.ok) {
+      result.diagnosis = credResp.status === 401
+        ? "The key is not authenticating. Copy it again from the D-ID Account page exactly as shown."
+        : "Unexpected response from D-ID on the credits check.";
+      return res.json(result);
+    }
+    // Step 2: can it actually render a tiny test video
+    const t0 = Date.now();
+    const avatar = await createAvatarVideo("Hello, this is a quick system test.");
+    result.renderCheck = {
+      seconds: Math.round((Date.now() - t0) / 1000),
+      success: !!avatar.videoUrl,
+      reason: avatar.reason || null,
+      lastError: lastDidError,
+      videoUrl: avatar.videoUrl || null,
+    };
+    result.diagnosis = avatar.videoUrl
+      ? "D-ID is working. If the app still shows the illustrated interviewer, redeploy and retry."
+      : "Key authenticates but rendering fails. See lastError above for the exact cause.";
+    res.json(result);
+  } catch (e) {
+    result.error = e.message;
+    res.json(result);
+  }
 });
 
 app.post("/api/start", async (req, res) => {
