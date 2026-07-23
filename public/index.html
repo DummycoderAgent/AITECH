@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SkillVoice | AI Technical Interview</title>
+<title>SkillVoice | AI Interviewer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -14,7 +14,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
-h1,h2,h3,.display{font-family:'Sora',sans-serif}
+h1,h2,h3{font-family:'Sora',sans-serif}
 .wrap{max-width:1040px;margin:0 auto;padding:32px 20px}
 .hidden{display:none !important}
 button{font-family:'Inter',sans-serif;cursor:pointer;border:none}
@@ -27,32 +27,45 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none}
 .btn.rec:hover{background:#A83E33}
 
 /* ── Landing ── */
-.brand{display:flex;align-items:center;gap:10px;margin-bottom:40px}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:36px}
 .brand .dot{width:14px;height:14px;border-radius:50%;background:var(--amber)}
 .brand span{font-family:'Sora',sans-serif;font-weight:700;font-size:19px;letter-spacing:.3px}
-.hero h1{font-size:clamp(30px,4.5vw,44px);font-weight:700;line-height:1.15;max-width:640px}
+.hero h1{font-size:clamp(28px,4.2vw,42px);font-weight:700;line-height:1.15;max-width:680px}
 .hero h1 em{font-style:normal;color:var(--teal)}
-.hero p{color:var(--mut);font-size:17px;margin:16px 0 34px;max-width:560px;line-height:1.6}
-.namebox{margin-bottom:28px;max-width:420px}
-.namebox label{display:block;font-size:13px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);margin-bottom:8px}
+.hero p{color:var(--mut);font-size:17px;margin:14px 0 30px;max-width:600px;line-height:1.6}
+.steplabel{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);margin:26px 0 12px}
+.steplabel .num{width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:'Sora',sans-serif}
+.namebox{max-width:420px}
 .namebox input{width:100%;padding:13px 16px;border:1.5px solid var(--line);border-radius:10px;font-size:16px;background:var(--card);font-family:'Inter',sans-serif}
 .namebox input:focus{outline:2px solid var(--teal);border-color:var(--teal)}
-.skills-label{font-size:13px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);margin-bottom:12px}
-.skills{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:34px}
-.skill{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:18px;text-align:left;transition:all .15s;position:relative}
-.skill:hover{border-color:var(--teal);transform:translateY(-2px)}
-.skill.sel{border-color:var(--teal);outline:2px solid var(--teal);background:#0E6E680A}
-.skill .sk-name{font-family:'Sora',sans-serif;font-weight:600;font-size:16px;margin-bottom:5px}
-.skill .sk-desc{font-size:13px;color:var(--mut);line-height:1.45}
-.skill .tick{position:absolute;top:14px;right:14px;width:20px;height:20px;border-radius:50%;background:var(--teal);color:#fff;font-size:12px;display:none;align-items:center;justify-content:center}
-.skill.sel .tick{display:flex}
+.profiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:14px}
+.profile{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:22px 18px;text-align:left;transition:all .15s;position:relative}
+.profile:hover{border-color:var(--teal);transform:translateY(-2px)}
+.profile.sel{border-color:var(--teal);outline:2px solid var(--teal);background:#0E6E680A}
+.profile .icon{width:46px;height:46px;border-radius:12px;background:var(--stage);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.profile.sel .icon{background:var(--teal)}
+.profile .p-name{font-family:'Sora',sans-serif;font-weight:600;font-size:16.5px;margin-bottom:5px}
+.profile .p-desc{font-size:13px;color:var(--mut);line-height:1.45}
+.roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.role{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:15px 16px;text-align:left;transition:all .13s;font-size:15px;font-weight:500;position:relative}
+.role:hover{border-color:var(--teal)}
+.role.sel{border-color:var(--teal);outline:2px solid var(--teal);background:#0E6E680A}
+.role .tick{position:absolute;top:12px;right:12px;width:19px;height:19px;border-radius:50%;background:var(--teal);color:#fff;font-size:11px;display:none;align-items:center;justify-content:center}
+.role.sel .tick{display:flex}
+.langs{display:flex;flex-wrap:wrap;gap:10px}
+.lang{background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:9px 18px;font-size:14px;font-weight:500;transition:all .13s}
+.lang:hover{border-color:var(--teal)}
+.lang.sel{background:var(--teal);border-color:var(--teal);color:#fff}
+.startrow{margin-top:32px}
 .notice{font-size:13px;color:var(--mut);margin-top:14px;line-height:1.5;max-width:560px}
 
 /* ── Interview stage ── */
 .stagebg{background:linear-gradient(160deg,var(--stage) 0%,var(--stage2) 100%);min-height:100vh}
 .stagebg .wrap{max-width:920px}
-.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;flex-wrap:wrap;gap:10px}
+.topbar .brand{margin-bottom:0}
 .topbar .brand span{color:#EDEAE2}
+.rolebadge{color:#C9C2B2;font-size:13px;background:#FFFFFF10;padding:6px 14px;border-radius:999px}
 .qprog{display:flex;gap:8px;align-items:center}
 .qdot{width:34px;height:6px;border-radius:3px;background:#FFFFFF22}
 .qdot.on{background:var(--amber)}
@@ -90,7 +103,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none}
 .twocol{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:32px}
 @media(max-width:640px){.twocol{grid-template-columns:1fr}}
 .panel{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:20px}
-.panel h3{font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.panel h3{font-size:15px;margin-bottom:12px}
 .panel ul{list-style:none}
 .panel li{font-size:14.5px;line-height:1.55;padding:7px 0 7px 22px;position:relative;color:#333B44}
 .panel li::before{content:"";position:absolute;left:2px;top:14px;width:8px;height:8px;border-radius:50%}
@@ -120,17 +133,30 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none}
 <div id="scrLanding" class="wrap">
   <div class="brand"><div class="dot"></div><span>SkillVoice</span></div>
   <div class="hero">
-    <h1>A spoken technical interview, conducted by an <em>AI interviewer</em>.</h1>
-    <p>Choose the skill you want to be evaluated on. Maya, your interviewer, will ask you three questions adapted to your answers. Speak naturally. At the end you receive a scored report.</p>
+    <h1>Your first round interview, conducted by an <em>AI interviewer</em>.</h1>
+    <p>Tell us the role you are applying for. Maya, your interviewer, will conduct a short spoken interview adapted to that role and your answers, and produce a scored assessment report.</p>
   </div>
-  <div class="namebox">
-    <label for="candName">Your name</label>
-    <input id="candName" type="text" placeholder="e.g. Priya Sharma" maxlength="60">
+
+  <div class="steplabel"><div class="num">1</div>Your name</div>
+  <div class="namebox"><input id="candName" type="text" placeholder="e.g. Priya Sharma" maxlength="60"></div>
+
+  <div class="steplabel"><div class="num">2</div>Which profile are you applying for?</div>
+  <div class="profiles" id="profileGrid"></div>
+
+  <div id="roleSection" class="hidden">
+    <div class="steplabel"><div class="num">3</div><span id="roleStepLabel">Select the role</span></div>
+    <div class="roles" id="roleGrid"></div>
   </div>
-  <div class="skills-label">Select one skill</div>
-  <div class="skills" id="skillGrid"></div>
-  <button class="btn" id="startBtn" disabled>Begin interview</button>
-  <p class="notice">You will need a working microphone. Each answer can be up to three minutes long. Your responses are transcribed and evaluated automatically.</p>
+
+  <div id="langSection" class="hidden">
+    <div class="steplabel"><div class="num">4</div>Preferred interview language</div>
+    <div class="langs" id="langRow"></div>
+  </div>
+
+  <div class="startrow">
+    <button class="btn" id="startBtn" disabled>Begin interview</button>
+    <p class="notice">You will need a working microphone. Each answer can be up to three minutes long. Your responses are transcribed and evaluated automatically.</p>
+  </div>
 </div>
 
 <!-- ── SCREEN 2: INTERVIEW ────────────────────────────── -->
@@ -138,6 +164,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none}
   <div class="wrap">
     <div class="topbar">
       <div class="brand"><div class="dot"></div><span>SkillVoice</span></div>
+      <div class="rolebadge" id="roleBadge"></div>
       <div class="qprog" id="qprog"></div>
     </div>
     <div class="stagecard">
@@ -182,38 +209,100 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none}
 </div>
 
 <script>
-const SKILLS = [
-  {id:"Python", name:"Python", desc:"Core language, data structures, idioms and applied problem solving"},
-  {id:"SQL and Data Modelling", name:"SQL and Data", desc:"Queries, joins, optimisation and schema design thinking"},
-  {id:"JavaScript and Modern Web", name:"JavaScript", desc:"Language fundamentals, async patterns and the modern web stack"},
-  {id:"Prompt Engineering", name:"Prompt Engineering", desc:"Designing, structuring and evaluating prompts for LLMs"},
-  {id:"Generative AI and LLM Engineering", name:"GenAI and LLM Engineering", desc:"RAG, agents, fine tuning, evaluation and production LLM systems"},
-  {id:"Machine Learning Fundamentals", name:"Machine Learning", desc:"Core ML concepts, model selection, metrics and pitfalls"}
+// Profile catalogue. Role lists mirror the backend library; the backend
+// validates every selection, so the two must stay in sync.
+const ICONS = {
+  ops: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EDEAE2" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg>',
+  sales: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EDEAE2" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>',
+  service: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EDEAE2" stroke-width="1.8"><path d="M4 13a8 8 0 0116 0"/><rect x="2.5" y="12.5" width="4" height="6.5" rx="1.6"/><rect x="17.5" y="12.5" width="4" height="6.5" rx="1.6"/><path d="M19.5 19v1a2.5 2.5 0 01-2.5 2.5h-3"/></svg>',
+  tech: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EDEAE2" stroke-width="1.8"><path d="M8.5 7L3.5 12l5 5M15.5 7l5 5-5 5"/></svg>'
+};
+
+const PROFILES = [
+  {id:"Operations", name:"Operations", icon:ICONS.ops, desc:"Analyst, financial operations, process and quality, MIS roles",
+   roles:["Operations Analyst","Financial Operations Associate","Process Excellence and Quality","MIS and Reporting Analyst"]},
+  {id:"Sales", name:"Sales", icon:ICONS.sales, desc:"Frontline to national leadership sales roles",
+   roles:["Frontline Sales Executive","Key Account Manager","Branch Manager","National Sales Head"]},
+  {id:"Customer Service", name:"Customer Service", icon:ICONS.service, desc:"Voice, chat, email and in person service roles",
+   roles:["Voice Support Executive","Chat Support Executive","Email and Back Office Support","In Person Customer Service"],
+   langRoles:["Voice Support Executive"]},
+  {id:"Technical", name:"Technical", icon:ICONS.tech, desc:"Software, data and AI engineering skills",
+   roles:["Python","SQL and Data Modelling","JavaScript and Modern Web","Prompt Engineering","Generative AI and LLM Engineering","Machine Learning Fundamentals"]}
 ];
+const LANGUAGES = ["English","Hindi","Tamil","Telugu","Kannada","Bengali","Marathi"];
 
 const $ = id => document.getElementById(id);
-let state = {name:"", skill:null, sessionId:null, qNum:1, qTotal:3, questionText:"", videoUrl:null, fallback:false};
+let state = {name:"", profile:null, role:null, language:"English",
+             sessionId:null, qNum:1, qTotal:3, questionText:"", videoUrl:null,
+             dims:["Accuracy","Depth","Clarity"], speechLocale:"en-IN"};
 let mediaRecorder=null, chunks=[], audioBlob=null, timerInt=null, seconds=0, mimeType="audio/webm";
 
-// ── Landing ──
-const grid = $("skillGrid");
-SKILLS.forEach(s=>{
+// ── Landing: profile, role and language selection ──
+const pGrid = $("profileGrid");
+PROFILES.forEach(p=>{
   const b=document.createElement("button");
-  b.className="skill";
-  b.innerHTML=`<div class="tick">✓</div><div class="sk-name">${s.name}</div><div class="sk-desc">${s.desc}</div>`;
-  b.onclick=()=>{state.skill=s.id;[...grid.children].forEach(c=>c.classList.remove("sel"));b.classList.add("sel");refreshStart();};
-  grid.appendChild(b);
+  b.className="profile";
+  b.innerHTML=`<div class="icon">${p.icon}</div><div class="p-name">${p.name}</div><div class="p-desc">${p.desc}</div>`;
+  b.onclick=()=>selectProfile(p,b);
+  pGrid.appendChild(b);
 });
+
+function selectProfile(p, btn){
+  state.profile=p.id; state.role=null; state.language="English";
+  [...pGrid.children].forEach(c=>c.classList.remove("sel"));
+  btn.classList.add("sel");
+  const rGrid=$("roleGrid"); rGrid.innerHTML="";
+  $("roleStepLabel").textContent = p.id==="Technical" ? "Select the skill to be evaluated on" : "Select the role you are applying for";
+  p.roles.forEach(r=>{
+    const rb=document.createElement("button");
+    rb.className="role";
+    rb.innerHTML=`<div class="tick">✓</div>${r}`;
+    rb.onclick=()=>selectRole(p,r,rb);
+    rGrid.appendChild(rb);
+  });
+  $("roleSection").classList.remove("hidden");
+  $("langSection").classList.add("hidden");
+  refreshStart();
+  $("roleSection").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function selectRole(p, role, btn){
+  state.role=role;
+  [...$("roleGrid").children].forEach(c=>c.classList.remove("sel"));
+  btn.classList.add("sel");
+  const needsLang = (p.langRoles||[]).includes(role);
+  if(needsLang){
+    const row=$("langRow"); row.innerHTML="";
+    LANGUAGES.forEach(l=>{
+      const lb=document.createElement("button");
+      lb.className="lang"+(l==="English"?" sel":"");
+      lb.textContent=l;
+      lb.onclick=()=>{state.language=l;[...row.children].forEach(c=>c.classList.remove("sel"));lb.classList.add("sel");};
+      row.appendChild(lb);
+    });
+    state.language="English";
+    $("langSection").classList.remove("hidden");
+  }else{
+    state.language="English";
+    $("langSection").classList.add("hidden");
+  }
+  refreshStart();
+}
+
 $("candName").addEventListener("input",e=>{state.name=e.target.value.trim();refreshStart();});
-function refreshStart(){$("startBtn").disabled=!(state.skill&&state.name.length>=2);}
+function refreshStart(){$("startBtn").disabled=!(state.profile&&state.role&&state.name.length>=2);}
 
 $("startBtn").onclick=async ()=>{
-  show("scrStage"); stageLoading("Your interviewer is preparing the first question…");
+  show("scrStage");
+  $("roleBadge").textContent=state.role;
+  stageLoading("Your interviewer is preparing the first question…");
   try{
-    const r=await fetch("/api/start",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:state.name,skill:state.skill})});
+    const r=await fetch("/api/start",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({name:state.name,profile:state.profile,role:state.role,language:state.language})});
     const d=await r.json();
     if(!r.ok) throw new Error(d.error||"Could not start");
-    Object.assign(state,{sessionId:d.sessionId,qNum:d.questionNumber,qTotal:d.totalQuestions,questionText:d.questionText,videoUrl:d.videoUrl,fallback:d.fallback});
+    Object.assign(state,{sessionId:d.sessionId,qNum:d.questionNumber,qTotal:d.totalQuestions,
+      questionText:d.questionText,videoUrl:d.videoUrl,dims:d.dims||state.dims,speechLocale:d.speechLocale||"en-IN"});
     presentQuestion();
   }catch(e){ stageError(e.message); }
 };
@@ -222,6 +311,7 @@ $("startBtn").onclick=async ()=>{
 function show(id){["scrLanding","scrStage","scrReport"].forEach(s=>$(s).classList.add("hidden"));$(id).classList.remove("hidden");window.scrollTo(0,0);}
 function stageLoading(txt){$("stageLoad").classList.remove("hidden");$("stageLive").classList.add("hidden");$("stageLoadText").textContent=txt;}
 function stageError(msg){$("stageLoad").classList.add("hidden");$("stageLive").classList.remove("hidden");$("errBox").classList.remove("hidden");$("errBox").textContent=msg;}
+function stageErrorSoft(msg){$("errBox").classList.remove("hidden");$("errBox").textContent=msg;}
 function setStatus(mode,txt){const p=$("statusPill");p.className="statuspill "+mode;$("statusText").textContent=txt;}
 function renderProg(){
   const el=$("qprog"); el.innerHTML="";
@@ -252,9 +342,9 @@ function speakFallback(text){
   try{
     speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(text);
-    u.rate=0.96; u.lang="en-IN";
+    u.rate=0.96; u.lang=state.speechLocale;
     const voices=speechSynthesis.getVoices();
-    const v=voices.find(v=>v.lang==="en-IN")||voices.find(v=>v.lang.startsWith("en"));
+    const v=voices.find(v=>v.lang===state.speechLocale)||voices.find(v=>v.lang.startsWith(state.speechLocale.split("-")[0]))||voices.find(v=>v.lang.startsWith("en"));
     if(v) u.voice=v;
     setStatus("speaking","Speaking");
     $("fbRing").style.opacity=1;
@@ -330,7 +420,7 @@ $("submitBtn").onclick=async ()=>{
       await loadReport(); return;
     }
     stageLoading("Your interviewer is preparing the next question…");
-    Object.assign(state,{qNum:d.next.questionNumber,qTotal:d.next.totalQuestions,questionText:d.next.questionText,videoUrl:d.next.videoUrl,fallback:d.next.fallback});
+    Object.assign(state,{qNum:d.next.questionNumber,qTotal:d.next.totalQuestions,questionText:d.next.questionText,videoUrl:d.next.videoUrl});
     presentQuestion();
   }catch(e){
     $("stageLoad").classList.add("hidden");$("stageLive").classList.remove("hidden");
@@ -338,7 +428,6 @@ $("submitBtn").onclick=async ()=>{
     $("submitBtn").classList.remove("hidden");$("againBtn").classList.remove("hidden");$("recBtn").classList.add("hidden");
   }
 };
-function stageErrorSoft(msg){$("errBox").classList.remove("hidden");$("errBox").textContent=msg;}
 
 // ── Report ──
 async function loadReport(){
@@ -358,22 +447,22 @@ function dial(score){
 }
 function esc(s){const d=document.createElement("div");d.textContent=s||"";return d.innerHTML;}
 function renderReport(d){
-  const rep=d.report;
+  const rep=d.report, dims=d.dimensions||state.dims;
   const qcards=d.questions.map(q=>`
     <div class="qcard">
       <div class="qq">Q${q.number}. ${esc(q.question)}</div>
       <div class="qt">"${esc(q.transcript)}"</div>
       <div class="bars">
-        ${["accuracy","depth","clarity"].map(k=>`
-          <div class="bar"><div class="bl"><span>${k[0].toUpperCase()+k.slice(1)}</span><span>${q[k]}/10</span></div>
-          <div class="bt"><div class="bf" style="width:${q[k]*10}%"></div></div></div>`).join("")}
+        ${dims.map((label,i)=>`
+          <div class="bar"><div class="bl"><span>${esc(label)}</span><span>${q.scores[i]}/10</span></div>
+          <div class="bt"><div class="bf" style="width:${q.scores[i]*10}%"></div></div></div>`).join("")}
       </div>
       <div class="qnote">${esc(q.note)}</div>
     </div>`).join("");
   $("reportBody").innerHTML=`
     <div class="rephead">
-      <div><h1>Technical Skill Assessment Report</h1></div>
-      <div class="repmeta"><strong>${esc(d.candidate)}</strong><br>${esc(d.skill)}<br>${esc(d.date)}</div>
+      <div><h1>Interview Assessment Report</h1></div>
+      <div class="repmeta"><strong>${esc(d.candidate)}</strong><br>${esc(d.role)} · ${esc(d.profile)}<br>${esc(d.language)} · ${esc(d.date)}</div>
     </div>
     <div class="scorerow">
       ${dial(rep.overall_score)}
@@ -394,7 +483,6 @@ function renderReport(d){
       <button class="btn ghost" onclick="location.reload()">Start a new assessment</button>
     </div>`;
 }
-// preload voices for the fallback narrator
 speechSynthesis.getVoices();
 </script>
 </body>
