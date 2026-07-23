@@ -8,10 +8,17 @@ const crypto = require("crypto");
 const path = require("path");
 
 const app = express();
+const APP_VERSION = "3.1";
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
 
 app.use(express.json({ limit: "2mb" }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  express.static(path.join(__dirname, "public"), {
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith(".html")) res.setHeader("Cache-Control", "no-store");
+    },
+  })
+);
 
 // ── Config ────────────────────────────────────────────────────────────────
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
@@ -22,6 +29,12 @@ const AVATAR_IMAGE_URL =
   process.env.AVATAR_IMAGE_URL ||
   "https://d-id-public-bucket.s3.amazonaws.com/alice.jpg";
 const TOTAL_QUESTIONS = parseInt(process.env.TOTAL_QUESTIONS || "3", 10);
+
+// Avatar mode: "did" (default, photorealistic rendered video via D-ID credits)
+// or "tts" (near zero cost: still portrait + OpenAI voice)
+const AVATAR_MODE = (process.env.AVATAR_MODE || "did").toLowerCase();
+const TTS_MODEL = process.env.TTS_MODEL || "gpt-4o-mini-tts";
+const TTS_VOICE = process.env.TTS_VOICE || "nova";
 
 const sessions = new Map();
 let lastDidError = null;
@@ -204,6 +217,57 @@ async function createAvatarVideo(text, voiceId) {
   }
 }
 
+// Generate spoken audio for the question via OpenAI TTS. Costs a fraction of
+// a rupee per question versus rendered avatar video. Returns a data URI.
+async function createTtsAudio(text, language) {
+  const attempt = async (model) => {
+    const resp = await fetch("https://api.openai.com/v1/audio/speech", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        voice: TTS_VOICE,
+        input: text,
+        response_format: "mp3",
+      }),
+    });
+    if (!resp.ok) {
+      const t = await resp.text();
+      throw new Error(`TTS ${model} ${resp.status}: ${t.slice(0, 200)}`);
+    }
+    const buf = Buffer.from(await resp.arrayBuffer());
+    return "data:audio/mpeg;base64," + buf.toString("base64");
+  };
+  try {
+    return await attempt(TTS_MODEL);
+  } catch (e1) {
+    console.error("TTS primary model failed, retrying with tts-1:", e1.message);
+    try {
+      return await attempt("tts-1");
+    } catch (e2) {
+      console.error("TTS fallback failed:", e2.message);
+      return null;
+    }
+  }
+}
+
+// Produce the media for a question according to the configured avatar mode,
+// degrading gracefully: did -> tts -> browser voice, tts -> browser voice.
+async function produceQuestionMedia(text, session) {
+  const voiceId = LANGUAGES[session.language]?.voice || "en-IN-NeerjaNeural";
+  if (AVATAR_MODE === "did") {
+    const avatar = await createAvatarVideo(text, voiceId);
+    if (avatar.videoUrl) return { videoUrl: avatar.videoUrl, audioData: null, avatarImage: null, fallback: false };
+    const audio = await createTtsAudio(text, session.language);
+    return { videoUrl: null, audioData: audio, avatarImage: audio ? AVATAR_IMAGE_URL : null, fallback: !audio };
+  }
+  const audio = await createTtsAudio(text, session.language);
+  return { videoUrl: null, audioData: audio, avatarImage: audio ? AVATAR_IMAGE_URL : null, fallback: !audio };
+}
+
 // ── Prompts ───────────────────────────────────────────────────────────────
 function interviewerSystem(session) {
   const track = TRACKS[session.profile];
@@ -298,9 +362,11 @@ Respond with JSON only:
 app.get("/api/health", (req, res) => {
   res.json({
     ok: true,
+    version: APP_VERSION,
     anthropic: !!ANTHROPIC_API_KEY,
     openai: !!OPENAI_API_KEY,
     did: !!DID_API_KEY,
+    avatarMode: AVATAR_MODE,
     didLastError: lastDidError,
     model: CLAUDE_MODEL,
   });
@@ -381,14 +447,16 @@ app.post("/api/start", async (req, res) => {
     session.currentQuestion = q.question;
     sessions.set(id, session);
 
-    const avatar = await createAvatarVideo(q.question, LANGUAGES[lang].voice);
+    const media = await produceQuestionMedia(q.question, session);
     res.json({
       sessionId: id,
       questionNumber: 1,
       totalQuestions: TOTAL_QUESTIONS,
       questionText: q.question,
-      videoUrl: avatar.videoUrl,
-      fallback: avatar.fallback || false,
+      videoUrl: media.videoUrl,
+      audioData: media.audioData,
+      avatarImage: media.avatarImage,
+      fallback: media.fallback || false,
       dims: track.dims,
       speechLocale: LANGUAGES[lang].bcp,
     });
@@ -434,7 +502,7 @@ app.post("/api/answer/:sessionId", upload.single("audio"), async (req, res) => {
 
     session.qIndex += 1;
     session.currentQuestion = evalData.next_question;
-    const avatar = await createAvatarVideo(evalData.next_question, LANGUAGES[session.language].voice);
+    const media = await produceQuestionMedia(evalData.next_question, session);
     res.json({
       transcript,
       done: false,
@@ -442,8 +510,10 @@ app.post("/api/answer/:sessionId", upload.single("audio"), async (req, res) => {
         questionNumber: session.qIndex + 1,
         totalQuestions: TOTAL_QUESTIONS,
         questionText: evalData.next_question,
-        videoUrl: avatar.videoUrl,
-        fallback: avatar.fallback || false,
+        videoUrl: media.videoUrl,
+        audioData: media.audioData,
+        avatarImage: media.avatarImage,
+        fallback: media.fallback || false,
       },
     });
   } catch (e) {
@@ -488,4 +558,4 @@ app.get("/api/report/:sessionId", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`SkillVoice Agentic Interviewer running on port ${PORT}`));
+app.listen(PORT, () => console.log(`SkillVoice Agentic Interviewer v${APP_VERSION} running on port ${PORT}`));
